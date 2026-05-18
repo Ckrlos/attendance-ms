@@ -3,6 +3,8 @@ package cl.duocuc.edutrack.ms.attendance.resource;
 import cl.duocuc.edutrack.ms.attendance.dto.request.CreateRecordRequest;
 import cl.duocuc.edutrack.ms.attendance.dto.response.ApiResponse;
 import cl.duocuc.edutrack.ms.attendance.dto.response.RecordResponse;
+import cl.duocuc.edutrack.ms.attendance.exception.AccessDeniedException;
+import cl.duocuc.edutrack.ms.attendance.security.UserContext;
 import cl.duocuc.edutrack.ms.attendance.service.AttendanceRecordService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -24,15 +26,22 @@ public class AttendanceRecordResource {
     @Inject
     AttendanceRecordService recordService;
 
+    @Inject
+    UserContext userContext;
+
     @POST
-    @Operation(summary = "Registrar asistencia", description = "Registra la asistencia de un alumno en una sesión OPEN")
+    @Operation(summary = "Registrar asistencia", description = "Registra la asistencia de un alumno en una sesión OPEN. Requiere rol TEACHER.")
     @APIResponse(responseCode = "201", description = "Asistencia registrada exitosamente")
-    @APIResponse(responseCode = "403", description = "La sesión está cerrada")
+    @APIResponse(responseCode = "401", description = "Header X-User-Id ausente")
+    @APIResponse(responseCode = "403", description = "La sesión está cerrada o sin permiso")
     @APIResponse(responseCode = "404", description = "Sesión no encontrada")
     @APIResponse(responseCode = "409", description = "Ya existe un registro para este alumno en esta sesión")
     @APIResponse(responseCode = "422", description = "Datos de entrada inválidos")
     public Response registerRecord(@PathParam("sessionId") UUID sessionId,
                                    @Valid CreateRecordRequest request) {
+        if (!userContext.hasRole("TEACHER")) {
+            throw new AccessDeniedException("TEACHER");
+        }
         ApiResponse<RecordResponse> response = recordService.registerRecord(sessionId, request);
         return Response.status(Response.Status.CREATED).entity(response).build();
     }

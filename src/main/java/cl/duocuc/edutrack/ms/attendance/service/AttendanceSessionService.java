@@ -8,6 +8,7 @@ import cl.duocuc.edutrack.ms.attendance.exception.SessionClosedException;
 import cl.duocuc.edutrack.ms.attendance.exception.SessionNotFoundException;
 import cl.duocuc.edutrack.ms.attendance.mapper.AttendanceSessionMapper;
 import cl.duocuc.edutrack.ms.attendance.repository.AttendanceSessionRepository;
+import cl.duocuc.edutrack.ms.attendance.security.UserContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -23,9 +24,12 @@ public class AttendanceSessionService {
     @Inject
     AttendanceSessionMapper sessionMapper;
 
+    @Inject
+    UserContext userContext;
+
     @Transactional
     public ApiResponse<SessionResponse> createSession(CreateSessionRequest request) {
-        AttendanceSession session = AttendanceSession.create(request.classId, request.teacherId);
+        AttendanceSession session = AttendanceSession.create(request.classId, userContext.getUserId());
         sessionRepository.persist(session);
         return new ApiResponse<>(sessionMapper.toResponse(session));
     }

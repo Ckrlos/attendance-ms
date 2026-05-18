@@ -11,7 +11,4 @@ public class CreateSessionRequest {
     @Schema(description = "UUID externo de la clase (course-ms)", required = true)
     public UUID classId;
 
-    @NotNull
-    @Schema(description = "UUID externo del docente (auth-ms)", required = true)
-    public UUID teacherId;
 }

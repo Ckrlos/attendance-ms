@@ -15,6 +15,9 @@ public class GlobalExceptionMapper implements ExceptionMapper<RuntimeException> 
         if (ex instanceof WebApplicationException wae) {
             return wae.getResponse();
         }
+        if (ex instanceof AccessDeniedException) {
+            return error(Response.Status.FORBIDDEN, "FORBIDDEN", ex.getMessage());
+        }
         if (ex instanceof SessionNotFoundException) {
             return error(Response.Status.NOT_FOUND, "SESSION_NOT_FOUND", ex.getMessage());
         }

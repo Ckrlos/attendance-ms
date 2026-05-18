@@ -3,6 +3,8 @@ package cl.duocuc.edutrack.ms.attendance.resource;
 import cl.duocuc.edutrack.ms.attendance.dto.request.CreateSessionRequest;
 import cl.duocuc.edutrack.ms.attendance.dto.response.ApiResponse;
 import cl.duocuc.edutrack.ms.attendance.dto.response.SessionResponse;
+import cl.duocuc.edutrack.ms.attendance.exception.AccessDeniedException;
+import cl.duocuc.edutrack.ms.attendance.security.UserContext;
 import cl.duocuc.edutrack.ms.attendance.service.AttendanceSessionService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -26,22 +28,34 @@ public class AttendanceSessionResource {
     @Inject
     AttendanceSessionService sessionService;
 
+    @Inject
+    UserContext userContext;
+
     @POST
-    @Operation(summary = "Crear sesión de asistencia", description = "Crea una nueva sesión en estado OPEN para una clase")
+    @Operation(summary = "Crear sesión de asistencia", description = "Crea una nueva sesión en estado OPEN para una clase. Requiere rol TEACHER.")
     @APIResponse(responseCode = "201", description = "Sesión creada exitosamente")
+    @APIResponse(responseCode = "401", description = "Header X-User-Id ausente")
+    @APIResponse(responseCode = "403", description = "El usuario no tiene rol TEACHER")
     @APIResponse(responseCode = "422", description = "Datos de entrada inválidos")
     public Response createSession(@Valid CreateSessionRequest request) {
+        if (!userContext.hasRole("TEACHER")) {
+            throw new AccessDeniedException("TEACHER");
+        }
         ApiResponse<SessionResponse> response = sessionService.createSession(request);
         return Response.status(Response.Status.CREATED).entity(response).build();
     }
 
     @PATCH
     @Path("/{id}/close")
-    @Operation(summary = "Cerrar sesión de asistencia", description = "Transiciona la sesión de OPEN a CLOSED. Operación irreversible.")
+    @Operation(summary = "Cerrar sesión de asistencia", description = "Transiciona la sesión de OPEN a CLOSED. Operación irreversible. Requiere rol TEACHER.")
     @APIResponse(responseCode = "200", description = "Sesión cerrada exitosamente")
-    @APIResponse(responseCode = "403", description = "La sesión ya está cerrada")
+    @APIResponse(responseCode = "401", description = "Header X-User-Id ausente")
+    @APIResponse(responseCode = "403", description = "Sesión cerrada o sin permiso")
     @APIResponse(responseCode = "404", description = "Sesión no encontrada")
     public Response closeSession(@PathParam("id") UUID sessionId) {
+        if (!userContext.hasRole("TEACHER")) {
+            throw new AccessDeniedException("TEACHER");
+        }
         ApiResponse<SessionResponse> response = sessionService.closeSession(sessionId);
         return Response.ok(response).build();
     }
