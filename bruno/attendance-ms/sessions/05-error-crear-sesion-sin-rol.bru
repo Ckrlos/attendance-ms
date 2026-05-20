@@ -1,0 +1,32 @@
+meta {
+  name: 05 - Error 403 crear sesión sin rol TEACHER
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/sessions
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  X-User-Id: {{teacherId}}
+  X-Roles: STUDENT
+  X-Correlation-Id: corr-010
+}
+
+body:json {
+  {
+    "classId": "{{classId}}"
+  }
+}
+
+docs {
+  # Error 403 - Crear sesión sin rol TEACHER
+
+  **Respuesta esperada:** 403 FORBIDDEN
+
+  Un usuario con rol STUDENT no puede crear sesiones de asistencia.
+}

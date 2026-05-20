@@ -1,0 +1,27 @@
+meta {
+  name: 03 - Error 403 sesión ya cerrada
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/sessions/{{sessionId}}/close
+  body: none
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  X-User-Id: {{teacherId}}
+  X-Roles: TEACHER
+  X-Correlation-Id: corr-008
+}
+
+docs {
+  # Error 403 - Sesión ya cerrada
+
+  **Respuesta esperada:** 403 SESSION_CLOSED
+
+  Ejecutar dos veces seguidas el cierre de la misma sesión.
+  La segunda llamada debe retornar 403 porque OPEN → CLOSED es irreversible.
+}
