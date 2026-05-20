@@ -1,0 +1,26 @@
+meta {
+  name: 04 - Error 404 sesión no encontrada
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/sessions/00000000-0000-0000-0000-000000000000/close
+  body: none
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  X-User-Id: {{teacherId}}
+  X-Roles: TEACHER
+  X-Correlation-Id: corr-009
+}
+
+docs {
+  # Error 404 - Sesión no encontrada
+
+  **Respuesta esperada:** 404 SESSION_NOT_FOUND
+
+  El UUID de la ruta no existe en base de datos.
+}

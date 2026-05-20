@@ -1,0 +1,36 @@
+meta {
+  name: 06 - Error 409 asistencia duplicada
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/sessions/{{sessionId}}/records
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  X-User-Id: {{teacherId}}
+  X-Roles: TEACHER
+  X-Correlation-Id: corr-007
+}
+
+body:json {
+  {
+    "studentId": "{{studentId}}",
+    "status": "PRESENT",
+    "captureMethod": "MANUAL",
+    "recordedAt": "2026-05-20T09:00:00"
+  }
+}
+
+docs {
+  # Error 409 - Asistencia duplicada
+
+  **Respuesta esperada:** 409 ATTENDANCE_ALREADY_EXISTS
+
+  Ejecutar después del request `01 - Registrar asistencia PRESENT`.
+  Mismo `studentId` + mismo `sessionId` = conflicto de unicidad.
+}

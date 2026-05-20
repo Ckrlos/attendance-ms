@@ -1,0 +1,35 @@
+meta {
+  name: 05 - Error 403 sin rol TEACHER
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/sessions/{{sessionId}}/records
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  X-User-Id: {{teacherId}}
+  X-Roles: STUDENT
+  X-Correlation-Id: corr-006
+}
+
+body:json {
+  {
+    "studentId": "{{studentId}}",
+    "status": "PRESENT",
+    "captureMethod": "MANUAL",
+    "recordedAt": "2026-05-20T09:00:00"
+  }
+}
+
+docs {
+  # Error 403 - Rol insuficiente
+
+  **Respuesta esperada:** 403 FORBIDDEN
+
+  El header `X-Roles` contiene `STUDENT` pero el endpoint requiere `TEACHER`.
+}

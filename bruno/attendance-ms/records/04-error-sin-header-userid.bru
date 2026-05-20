@@ -1,0 +1,33 @@
+meta {
+  name: 04 - Error 401 sin X-User-Id
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/sessions/{{sessionId}}/records
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  X-Roles: TEACHER
+}
+
+body:json {
+  {
+    "studentId": "{{studentId}}",
+    "status": "PRESENT",
+    "captureMethod": "MANUAL",
+    "recordedAt": "2026-05-20T09:00:00"
+  }
+}
+
+docs {
+  # Error 401 - Sin header X-User-Id
+
+  **Respuesta esperada:** 401 UNAUTHORIZED
+
+  El GatewayHeaderFilter rechaza la petición porque falta el header `X-User-Id`.
+}

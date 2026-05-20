@@ -1,0 +1,35 @@
+meta {
+  name: 02 - Registrar asistencia ABSENT
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/sessions/{{sessionId}}/records
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  X-User-Id: {{teacherId}}
+  X-Roles: TEACHER
+  X-Correlation-Id: corr-004
+}
+
+body:json {
+  {
+    "studentId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+    "status": "ABSENT",
+    "captureMethod": "MANUAL",
+    "recordedAt": "2026-05-20T09:00:00"
+  }
+}
+
+docs {
+  # Registrar asistencia - ABSENT
+
+  Registra al alumno como **ausente**. El campo `metadata` es opcional.
+
+  Usa un studentId diferente al del request PRESENT para evitar 409.
+}
