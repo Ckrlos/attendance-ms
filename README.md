@@ -63,3 +63,4 @@ If you want to learn more about building native executables, please consult <htt
 - Jacoco - Code Coverage ([guide](https://quarkus.io/guides/tests-with-coverage)): Jacoco test coverage support
 - JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC
 
+## Reporte de inasistencias acumuladas
