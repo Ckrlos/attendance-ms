@@ -6,9 +6,9 @@ import cl.duocuc.edutrack.ms.attendance.domain.AttendanceStatus;
 import cl.duocuc.edutrack.ms.attendance.dto.request.CreateRecordRequest;
 import cl.duocuc.edutrack.ms.attendance.dto.response.ApiResponse;
 import cl.duocuc.edutrack.ms.attendance.dto.response.RecordResponse;
-import cl.duocuc.edutrack.ms.attendance.exception.DuplicateAttendanceException;
 import cl.duocuc.edutrack.ms.attendance.mapper.AttendanceRecordMapper;
 import cl.duocuc.edutrack.ms.attendance.repository.AttendanceRecordRepository;
+import cl.duocuc.edutrack.ms.infrastructure.exception.ConflictException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -32,7 +32,7 @@ public class AttendanceRecordService {
         AttendanceSession session = sessionService.getOpenSession(sessionId);
 
         if (recordRepository.existsByStudentAndSession(request.studentId, sessionId)) {
-            throw new DuplicateAttendanceException(request.studentId, sessionId);
+            throw new ConflictException("","Ya existe un registro para este alumno en esta sesión");
         }
 
         AttendanceStatus status;

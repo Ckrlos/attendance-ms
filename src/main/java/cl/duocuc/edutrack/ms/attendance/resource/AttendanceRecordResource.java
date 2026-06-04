@@ -3,9 +3,10 @@ package cl.duocuc.edutrack.ms.attendance.resource;
 import cl.duocuc.edutrack.ms.attendance.dto.request.CreateRecordRequest;
 import cl.duocuc.edutrack.ms.attendance.dto.response.ApiResponse;
 import cl.duocuc.edutrack.ms.attendance.dto.response.RecordResponse;
-import cl.duocuc.edutrack.ms.attendance.exception.AccessDeniedException;
-import cl.duocuc.edutrack.ms.attendance.security.UserContext;
 import cl.duocuc.edutrack.ms.attendance.service.AttendanceRecordService;
+import cl.duocuc.edutrack.ms.infrastructure.context.RequestContext;
+import cl.duocuc.edutrack.ms.infrastructure.security.Permission;
+import cl.duocuc.edutrack.ms.infrastructure.security.RequirePermission;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -17,6 +18,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.UUID;
 
+import static cl.duocuc.edutrack.ms.attendance.security.AttendencesResourcesId.registros;
+
 @Path("/sessions/{sessionId}/records")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -27,7 +30,7 @@ public class AttendanceRecordResource {
     AttendanceRecordService recordService;
 
     @Inject
-    UserContext userContext;
+    RequestContext userContext;
 
     @POST
     @Operation(summary = "Registrar asistencia", description = "Registra la asistencia de un alumno en una sesión OPEN. Requiere rol TEACHER.")
@@ -37,11 +40,9 @@ public class AttendanceRecordResource {
     @APIResponse(responseCode = "404", description = "Sesión no encontrada")
     @APIResponse(responseCode = "409", description = "Ya existe un registro para este alumno en esta sesión")
     @APIResponse(responseCode = "422", description = "Datos de entrada inválidos")
+    @RequirePermission(resource = registros, value = Permission.WRITE)
     public Response registerRecord(@PathParam("sessionId") UUID sessionId,
                                    @Valid CreateRecordRequest request) {
-        if (!userContext.hasRole("TEACHER")) {
-            throw new AccessDeniedException("TEACHER");
-        }
         ApiResponse<RecordResponse> response = recordService.registerRecord(sessionId, request);
         return Response.status(Response.Status.CREATED).entity(response).build();
     }

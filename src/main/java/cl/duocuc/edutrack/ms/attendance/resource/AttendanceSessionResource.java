@@ -3,9 +3,10 @@ package cl.duocuc.edutrack.ms.attendance.resource;
 import cl.duocuc.edutrack.ms.attendance.dto.request.CreateSessionRequest;
 import cl.duocuc.edutrack.ms.attendance.dto.response.ApiResponse;
 import cl.duocuc.edutrack.ms.attendance.dto.response.SessionResponse;
-import cl.duocuc.edutrack.ms.attendance.exception.AccessDeniedException;
-import cl.duocuc.edutrack.ms.attendance.security.UserContext;
 import cl.duocuc.edutrack.ms.attendance.service.AttendanceSessionService;
+import cl.duocuc.edutrack.ms.infrastructure.context.RequestContext;
+import cl.duocuc.edutrack.ms.infrastructure.security.Permission;
+import cl.duocuc.edutrack.ms.infrastructure.security.RequirePermission;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -19,6 +20,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.UUID;
 
+import static cl.duocuc.edutrack.ms.attendance.security.AttendencesResourcesId.registros;
+import static cl.duocuc.edutrack.ms.attendance.security.AttendencesResourcesId.sesiones;
+
 @Path("/sessions")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -29,7 +33,7 @@ public class AttendanceSessionResource {
     AttendanceSessionService sessionService;
 
     @Inject
-    UserContext userContext;
+    RequestContext userContext;
 
     @POST
     @Operation(summary = "Crear sesión de asistencia", description = "Crea una nueva sesión en estado OPEN para una clase. Requiere rol TEACHER.")
@@ -37,10 +41,8 @@ public class AttendanceSessionResource {
     @APIResponse(responseCode = "401", description = "Header X-User-Id ausente")
     @APIResponse(responseCode = "403", description = "El usuario no tiene rol TEACHER")
     @APIResponse(responseCode = "422", description = "Datos de entrada inválidos")
+    @RequirePermission(resource = sesiones, value = Permission.WRITE)
     public Response createSession(@Valid CreateSessionRequest request) {
-        if (!userContext.hasRole("TEACHER")) {
-            throw new AccessDeniedException("TEACHER");
-        }
         ApiResponse<SessionResponse> response = sessionService.createSession(request);
         return Response.status(Response.Status.CREATED).entity(response).build();
     }
@@ -52,10 +54,8 @@ public class AttendanceSessionResource {
     @APIResponse(responseCode = "401", description = "Header X-User-Id ausente")
     @APIResponse(responseCode = "403", description = "Sesión cerrada o sin permiso")
     @APIResponse(responseCode = "404", description = "Sesión no encontrada")
+    @RequirePermission(resource = sesiones, value = Permission.WRITE)
     public Response closeSession(@PathParam("id") UUID sessionId) {
-        if (!userContext.hasRole("TEACHER")) {
-            throw new AccessDeniedException("TEACHER");
-        }
         ApiResponse<SessionResponse> response = sessionService.closeSession(sessionId);
         return Response.ok(response).build();
     }
