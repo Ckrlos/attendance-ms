@@ -13,7 +13,7 @@ post {
 headers {
   Content-Type: application/json
   X-User-Id: {{teacherId}}
-  X-Roles: TEACHER
+  X-Roles: PROFESOR
   X-Correlation-Id: corr-001
 }
 
@@ -31,12 +31,12 @@ script:post-response {
 
 docs {
   # Crear sesión de asistencia
-
+  
   Crea una nueva sesión en estado **OPEN** para una clase.
-
+  
   **Requiere:** rol `TEACHER` en header `X-Roles`
-
+  
   **Respuesta esperada:** 201 con el objeto de la sesión creada.
-
+  
   La variable `sessionId` se guarda automáticamente para usar en los siguientes requests.
 }
