@@ -206,7 +206,7 @@ Pasos:
 
 ## Convenciones del equipo
 
-- Los Is de recursos externos (`class_id`, `student_id`, `teacher_id`) son UUIDs opacos — este
+- Los IDs de recursos externos (`class_id`, `student_id`, `teacher_id`) son UUIDs opacos — este
   servicio no hace joins cross-schema ni consultas a otros microservicios.
 - **Nunca se hace `DELETE` físico** — siempre soft delete via `deleted_at`.
 - El campo `metadata` en los registros es JSONB libre: se almacena sin interpretar, pensado para
